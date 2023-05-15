@@ -1,16 +1,26 @@
 package goimagemerge
 
 import (
+	"bytes"
+	"context"
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/jpeg"
 	"image/png"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
+	"time"
+
+	"github.com/ozankasikci/go-image-merge/utils"
+	"golang.org/x/sync/errgroup"
 )
 
 // Specifies how the grid pixel size should be calculated
@@ -43,6 +53,14 @@ type MergeImage struct {
 	FixedGridSizeY  int
 	GridSizeMode    gridSizeMode
 	GridSizeFromNth int
+}
+
+func NewWithRemoteImages(imageURLs []string, imageCountDX, imageCountDY int, opts ...func(*MergeImage)) *MergeImage {
+	grids := []*Grid{}
+	for _, imageURL := range imageURLs {
+		grids = append(grids, &Grid{ImageFilePath: imageURL})
+	}
+	return New(grids, imageCountDX, imageCountDY, opts...)
 }
 
 // New returns a new *MergeImage instance
@@ -96,6 +114,61 @@ func (m *MergeImage) readGridImage(grid *Grid) (image.Image, error) {
 	}
 
 	return m.ReadImageFile(imgPath)
+}
+
+func (m *MergeImage) readGridsImagesFromRemote() ([]image.Image, error) {
+	var imagesMutex sync.RWMutex
+	var images = make([]image.Image, len(m.Grids))
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	g, ctx := errgroup.WithContext(ctx)
+	for idx, grid := range m.Grids {
+		imageIdx := idx
+		imageURL := grid.ImageFilePath
+		g.Go(func() error {
+			rsp, err := http.Get(imageURL)
+			if err != nil {
+				return fmt.Errorf("failed to download image %s, %w", imageURL, err)
+			}
+			defer rsp.Body.Close()
+
+			body, err := ioutil.ReadAll(rsp.Body)
+			if err != nil {
+				return fmt.Errorf("failed to read response body, %w", err)
+			}
+
+			if rsp.StatusCode/100 != 2 {
+				return fmt.Errorf("status code %d != 2xx, %s", rsp.StatusCode, string(body))
+			}
+
+			if utils.IsPNGImage(body) {
+				img, err := png.Decode(bytes.NewReader(body))
+				if err != nil {
+					return fmt.Errorf("failed to decode png image, %w", err)
+				}
+				imagesMutex.Lock()
+				images[imageIdx] = img
+				imagesMutex.Unlock()
+			} else if utils.IsJPEGImage(body) {
+				img, err := jpeg.Decode(bytes.NewReader(body))
+				if err != nil {
+					return fmt.Errorf("failed to decode jpeg image, %w", err)
+				}
+				imagesMutex.Lock()
+				images[imageIdx] = img
+				imagesMutex.Unlock()
+			} else {
+				return fmt.Errorf("unsupported format of image %s, expected .png or .jpeg", imageURL)
+			}
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+	return images, nil
 }
 
 func (m *MergeImage) readGridsImages() ([]image.Image, error) {
@@ -202,7 +275,22 @@ func (m *MergeImage) mergeGrids(images []image.Image) (*image.RGBA, error) {
 
 // Merge reads the contents of the given file paths, merges them according to given configuration
 func (m *MergeImage) Merge() (*image.RGBA, error) {
-	images, err := m.readGridsImages()
+	useRemote := false
+	for _, grid := range m.Grids {
+		if strings.HasPrefix(grid.ImageFilePath, "https") || strings.HasPrefix(grid.ImageFilePath, "http") {
+			useRemote = true
+			break
+		}
+	}
+
+	var err error
+	var images []image.Image
+
+	if useRemote {
+		images, err = m.readGridsImagesFromRemote()
+	} else {
+		images, err = m.readGridsImages()
+	}
 	if err != nil {
 		return nil, err
 	}
