@@ -2,8 +2,8 @@
 
 `gim` is a image merging library that can accept image paths as input, read the image contents, add background color, draw layers on top of each other, merge them into a grid with the desired size.
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/ozankasikci/go-image-merge)](https://goreportcard.com/report/github.com/ozankasikci/go-image-merge)
-[![GoDoc](https://godoc.org/github.com/ozankasikci/go-image-merge?status.svg)](https://godoc.org/github.com/ozankasikci/go-image-merge)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Hurricanezwf/go-image-merge)](https://goreportcard.com/report/github.com/Hurricanezwf/go-image-merge)
+[![GoDoc](https://godoc.org/github.com/Hurricanezwf/go-image-merge?status.svg)](https://godoc.org/github.com/Hurricanezwf/go-image-merge)
 
 ## Table of Contents
 
@@ -66,7 +66,7 @@ rgba, err := gim.New(grids, 2, 2).Merge()
 ```
 
 #### Output
-![](https://raw.githubusercontent.com/ozankasikci/ozankasikci.github.io/master/gim/grid-size-2-2.jpg)
+![](https://raw.githubusercontent.com/Hurricanezwf/Hurricanezwf.github.io/master/gim/grid-size-2-2.jpg)
 
 ### Grid Background Color
 ```go
@@ -84,7 +84,7 @@ rgba, err := gim.New(grids, 2, 1).Merge()
 ```
 
 #### Output
-![](https://raw.githubusercontent.com/ozankasikci/ozankasikci.github.io/master/gim/grid-bg-color.jpg)
+![](https://raw.githubusercontent.com/Hurricanezwf/Hurricanezwf.github.io/master/gim/grid-bg-color.jpg)
 
 ### Grid Layers - Draw Grids on top of Grids
 ```go
@@ -120,7 +120,7 @@ rgba, err := gim.New(grids, 2, 1).Merge()
 ```
 
 #### Output
-![](https://raw.githubusercontent.com/ozankasikci/ozankasikci.github.io/master/gim/grid-layers.jpg)
+![](https://raw.githubusercontent.com/Hurricanezwf/Hurricanezwf.github.io/master/gim/grid-layers.jpg)
 
 ## Functional Options
 
@@ -149,7 +149,7 @@ rgba, err := gim.New( grids, 2, 1,
 ).Merge()
 ```
 #### Output
-![](https://raw.githubusercontent.com/ozankasikci/ozankasikci.github.io/master/gim/grid-resize-pixels-200-150.jpg)
+![](https://raw.githubusercontent.com/Hurricanezwf/Hurricanezwf.github.io/master/gim/grid-resize-pixels-200-150.jpg)
 
 ## TODO
 - [x] Add colored background support

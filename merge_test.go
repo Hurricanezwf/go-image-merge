@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	goimagemerge "github.com/ozankasikci/go-image-merge"
+	goimagemerge "github.com/Hurricanezwf/go-image-merge"
 )
 
 func TestMergeWithRemoteImage(t *testing.T) {

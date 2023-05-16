@@ -19,7 +19,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ozankasikci/go-image-merge/utils"
+	"github.com/Hurricanezwf/go-image-merge/utils"
 	"golang.org/x/sync/errgroup"
 )
 
