@@ -25,7 +25,7 @@ The main purpose of the library is to help creating image collages programmatica
 
 ## Installation
 
-`go get -u github.com/ozankasikci/go-image-merge`
+`go get -u github.com/Hurricanezwf/go-image-merge`
 
 ## Getting Started
 
