@@ -10,10 +10,7 @@ import (
 
 func TestMergeWithRemoteImage(t *testing.T) {
 	m := goimagemerge.NewWithRemoteImages([]string{
-		"https://cos-xica-prod.tiamat.world/user/t11OW_xpCbbtYoGM8Abao/createdimage/MLmfx5SoVBb4K6DIQaEbb.png?x-image-process=style/scale",
-		"https://cos-xica-prod.tiamat.world/user/t11OW_xpCbbtYoGM8Abao/createdimage/LnHL9qUH702m0Jn5DquTn.png?x-image-process=style/scale",
-		"https://cos-xica-prod.tiamat.world/user/t11OW_xpCbbtYoGM8Abao/createdimage/6wND7zVeOicsTAIiat8gt.png?x-image-process=style/scale",
-		"https://cos-xica-prod.tiamat.world/user/t11OW_xpCbbtYoGM8Abao/createdimage/GmnGCk8XgzZiHjazEg7tX.png?x-image-process=style/scale",
+		// TODO: give me four image urls.
 	}, 2, 2)
 
 	image, err := m.Merge()
